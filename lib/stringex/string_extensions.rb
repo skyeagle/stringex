@@ -42,7 +42,7 @@ module Stringex
     # Performs multiple text manipulations. Essentially a shortcut for typing them all. View source
     # below to see which methods are run.
     def remove_formatting
-      strip_html_tags.convert_smart_punctuation.convert_accented_entities.convert_misc_entities.convert_misc_characters.to_ascii.collapse
+      strip_html_tags.convert_accented_entities.convert_misc_entities.convert_misc_characters.to_ascii.collapse
     end
 
     # Removes HTML tags from text. This code is simplified from Tobias Luettke's regular expression
@@ -133,7 +133,7 @@ module Stringex
     # you should run any methods which convert HTML entities (convert_html_entities and convert_misc_entities)
     # before running this method.
     def convert_misc_characters
-      dummy = dup.gsub(/\.{3,}/, " dot dot dot ") # Catch ellipses before single dot rule!
+      dummy = dup.gsub(/\.{3,}/, "") # Catch ellipses before single dot rule!
       # Special rules for money
       {
         /(\s|^)\$(\d+)\.(\d+)(\s|$)/ => '\2 dollars \3 cents',
@@ -147,13 +147,11 @@ module Stringex
         /\s*&\s*/ => "and",
         /\s*#/ => "number",
         /\s*@\s*/ => "at",
-        /(\S|^)\.(\S)/ => '\1 dot \2',
         /(\s|^)\$(\d*)(\s|$)/ => '\2 dollars',
         /(\s|^)£(\d*)(\s|$)/u => '\2 pounds',
         /(\s|^)¥(\d*)(\s|$)/u => '\2 yen',
         /\s*\*\s*/ => "star",
         /\s*%\s*/ => "percent",
-        /\s*(\\|\/)\s*/ => "slash",
         /(\s*=\s*)/ => " equals ",
         /\s*\+\s*/ => "plus"
       }.each do |found, replaced|
