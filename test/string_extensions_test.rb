@@ -49,8 +49,26 @@ class StringExtensionsTest < Test::Unit::TestCase
         "im-just-making-sure-theres-nothing-wrong-with-things",
       "foo = bar and bar=foo" =>
         "foo-equals-bar-and-bar-equals-foo",
+      "Period.period" =>
+        "period-dot-period",
       "Will…This Work?" =>
-        "will-dot-dot-dot-this-work"
+        "will-dot-dot-dot-this-work",
+      "¼ pound with cheese" =>
+        "one-fourth-pound-with-cheese",
+      "Will's Ferrel" =>
+        "wills-ferrel",
+      "Капитал" => 
+        "kapital",
+      "Ελλάδα" => 
+        "ellada",
+      "中文" => 
+        "zhong-wen",
+      "Paul Cézanne" => 
+        "paul-cezanne",
+      "21'17ʼ51" => 
+        "21-17-51",
+      "ITCZ 1 (21°17ʼ51.78”N / 89°35ʼ28.18”O / 26-04-08 / 09:00 am)" => 
+        "itcz-1-21-degrees-17-51-dot-78-n-slash-89-degrees-35-28-dot-18-o-slash-26-04-08-slash-09-00-am"
     }.each do |html, plain|
       assert_equal plain, html.to_url
     end
@@ -95,6 +113,46 @@ class StringExtensionsTest < Test::Unit::TestCase
     end
   end
 
+  def test_convert_vulgar_fractions
+    {
+      "&frac14;" => "one fourth",
+      "¼" => "one fourth",
+      "&#188;" => "one fourth",
+      "&frac12;" => "half",
+      "½" => "half",
+      "&#189;" => "half",
+      "&frac34;" => "three fourths",
+      "¾" => "three fourths",
+      "&#190;" => "three fourths",
+      "⅓" => "one third",
+      "&#8531;" => "one third",
+      "⅔" => "two thirds",
+      "&#8532;" => "two thirds",
+      "⅕" => "one fifth",
+      "&#8533;" => "one fifth",
+      "⅖" => "two fifths",
+      "&#8534;" => "two fifths",
+      "⅗" => "three fifths",
+      "&#8535;" => "three fifths",
+      "⅘" => "four fifths",
+      "&#8536;" => "four fifths",
+      "⅙" => "one sixth",
+      "&#8537;" => "one sixth",
+      "⅚" => "five sixths",
+      "&#8538;" => "five sixths",
+      "⅛" => "one eighth",
+      "&#8539;" => "one eighth",
+      "⅜" => "three eighths",
+      "&#8540;" => "three eighths",
+      "⅝" => "five eighths",
+      "&#8541;" => "five eighths",
+      "⅞" => "seven eighths",
+      "&#8542;" => "seven eighths"
+    }.each do |entitied, plain|
+      assert_equal plain, entitied.convert_vulgar_fractions
+    end
+  end
+
   def test_convert_misc_entities
     {
       "America&#8482;" => "America(tm)",
@@ -102,7 +160,6 @@ class StringExtensionsTest < Test::Unit::TestCase
       "To be continued&#8230;" => "To be continued...",
       "Foo&nbsp;Bar" => "Foo Bar",
       "100&#163;" => "100 pound",
-      "&frac12; a dollar" => "half a dollar",
       "35&deg;" => "35 degrees"
     }.each do |entitied, plain|
       assert_equal plain, entitied.convert_misc_entities
@@ -155,5 +212,9 @@ class StringExtensionsTest < Test::Unit::TestCase
     end
 
     assert_equal "now-with-hyphens", "----now---------with-hyphens--------".collapse("-")
+  end
+
+  def test_to_url_limit
+    assert_equal "I am much too long".to_url(:limit => 13), "i-am-much-too"
   end
 end
